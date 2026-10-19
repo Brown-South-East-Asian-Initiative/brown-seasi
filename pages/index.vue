@@ -18,6 +18,33 @@ useSeoMeta({
   twitterDescription: description,
   twitterImage: ogImage,
 })
+
+// Google reads the site name shown in search results from WebSite structured data.
+const homeUrl = useSiteAssetUrl('/')
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify([
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'SEASI',
+          alternateName: ['Brown SEASI', 'Southeast Asian Studies Initiative'],
+          url: homeUrl,
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'Southeast Asian Studies Initiative at Brown University',
+          alternateName: 'SEASI',
+          url: homeUrl,
+          logo: useSiteAssetUrl('/images/logo.png'),
+        },
+      ]),
+    },
+  ],
+})
 </script>
 
 <template>

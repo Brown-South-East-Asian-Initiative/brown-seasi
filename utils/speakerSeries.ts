@@ -11,7 +11,10 @@ export interface SpeakerTalk {
   location?: string
   time?: string
   portrait?: string
-  flyer?: string
+  /** Flyer image(s) shown on the talk card. */
+  flyer?: string | string[]
+  /** File to open from “Download flyer” (defaults to the first flyer image). */
+  flyerDownload?: string
   gallery?: { src: string; alt: string; caption?: string }[]
 }
 
@@ -52,9 +55,15 @@ export const speakerTalks: SpeakerTalk[] = [
     date: '2026-10-21',
     speaker: 'Yu-Mei Balasingamchow',
     affiliation: 'Author of Names Have Been Changed',
-    location: 'Pembroke Hall',
+    title: '"Names Have Been Changed" Book Talk & Signing',
+    location: 'Pembroke Hall, Room 305',
     time: '5:30 – 7:00 PM',
     portrait: '/images/speaker-series/yu-mei-balasingamchow.png',
+    flyer: [
+      '/images/speaker-series/flyer-yu-mei-balasingamchow-1.png',
+      '/images/speaker-series/flyer-yu-mei-balasingamchow-2.png',
+    ],
+    flyerDownload: '/Yu-Mei%20Balasingamchow%20Book%20Talk.pdf',
   },
   {
     slug: 'nurfadzilah-yahaya',
@@ -71,6 +80,17 @@ export const speakerTalks: SpeakerTalk[] = [
 /** "2026-09-30" → Date at local noon (avoids timezone day-shift). */
 function toDate(iso: string) {
   return new Date(`${iso}T12:00:00`)
+}
+
+export function flyerImages(talk: SpeakerTalk) {
+  if (!talk.flyer) return []
+  return Array.isArray(talk.flyer) ? talk.flyer : [talk.flyer]
+}
+
+export function formatTalkTitle(title: string) {
+  const trimmed = title.trim()
+  if (/^["“']/.test(trimmed)) return trimmed
+  return `“${trimmed}”`
 }
 
 export function formatTalkDate(iso: string, style: 'long' | 'short' = 'long') {

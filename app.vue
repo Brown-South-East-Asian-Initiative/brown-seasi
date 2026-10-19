@@ -6,7 +6,7 @@ const siteUrl = computed(() => (config.public.siteUrl as string | undefined)?.re
 const canonicalUrl = computed(() => (siteUrl.value ? `${siteUrl.value}${route.path}` : ''))
 
 useSeoMeta({
-  ogSiteName: 'Brown SEASI',
+  ogSiteName: 'SEASI',
   ogType: 'website',
   ogLocale: 'en_US',
   ogUrl: canonicalUrl,

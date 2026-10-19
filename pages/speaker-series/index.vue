@@ -105,7 +105,7 @@ onMounted(() => {
               </div>
             </div>
             <p v-if="nextTalk.title" class="font-cormorant italic text-xl text-ivory/85 mt-4">
-              “{{ nextTalk.title }}”
+              {{ formatTalkTitle(nextTalk.title) }}
             </p>
             <p class="font-mono text-2xs uppercase tracking-widest text-ivory/60 mt-4 flex items-center justify-between gap-4">
               <span>{{ formatTalkDate(nextTalk.date, 'short') }}</span>
@@ -188,7 +188,7 @@ onMounted(() => {
                   {{ talk.speaker }}
                 </h3>
                 <p class="font-cormorant italic text-lg md:text-xl mt-1" :class="talk.title ? 'text-ink-light' : 'text-muted/60'">
-                  {{ talk.title ? `“${talk.title}”` : 'Talk title to be announced' }}
+                  {{ talk.title ? formatTalkTitle(talk.title) : 'Talk title to be announced' }}
                 </p>
               </div>
 
@@ -245,19 +245,20 @@ onMounted(() => {
                   </p>
 
                   <div
-                    v-if="talk.flyer || talk.gallery?.length"
+                    v-if="flyerImages(talk).length || talk.gallery?.length"
                     class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
                   >
                     <a
-                      v-if="talk.flyer"
-                      :href="talk.flyer"
+                      v-for="(src, i) in flyerImages(talk)"
+                      :key="src"
+                      :href="talk.flyerDownload ?? src"
                       target="_blank"
                       rel="noopener"
                       class="group/img row-span-2 lg:row-span-1 overflow-hidden rounded-lg ring-1 ring-crimson/15 bg-white"
                     >
                       <img
-                        :src="talk.flyer"
-                        :alt="`Lecture Series flyer for ${talk.speaker}`"
+                        :src="src"
+                        :alt="`Lecture Series flyer${flyerImages(talk).length > 1 ? ` ${i + 1}` : ''} for ${talk.speaker}`"
                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-[1.03] lg:aspect-[3/4]"
                         loading="lazy"
                       >
@@ -290,8 +291,8 @@ onMounted(() => {
                       Questions / RSVP
                     </a>
                     <a
-                      v-if="talk.flyer"
-                      :href="talk.flyer"
+                      v-if="talk.flyerDownload || flyerImages(talk).length"
+                      :href="talk.flyerDownload ?? flyerImages(talk)[0]"
                       target="_blank"
                       rel="noopener"
                       class="inline-flex items-center gap-2 font-sans text-sm font-medium px-5 py-2.5 border border-crimson/20 text-ink hover:border-crimson hover:text-crimson rounded-full transition-all duration-300"
