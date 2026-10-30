@@ -1,0 +1,31 @@
+{
+  "slug": "juno-parrenas",
+  "date": "2026-09-30",
+  "speaker": "Juno Parreñas",
+  "affiliation": "Cornell University",
+  "role": "Associate Professor of Science and Technology Studies and Feminist, Gender and Sexuality Studies",
+  "title": "Tropical Polar Bears",
+  "location": "Sharpe House, Room 125",
+  "time": "5:00 – 6:31 PM",
+  "portrait": "/images/speaker-series/juno-parrenas.png",
+  "flyer": [
+    "/images/speaker-series/flyer-juno-parrenas.png"
+  ],
+  "gallery": [
+    {
+      "src": "/images/speaker-series/inuka-statue.jpg",
+      "alt": "Bronze statue of Inuka the polar bear among tropical plants",
+      "caption": "Memorial statue of Inuka"
+    },
+    {
+      "src": "/images/speaker-series/inuka-cafe.jpg",
+      "alt": "Inuka Cafe storefront painted with icy mountains",
+      "caption": "Inuka Cafe"
+    },
+    {
+      "src": "/images/speaker-series/inuka-keychain.jpg",
+      "alt": "Plush polar bear keychain embroidered with the name Inuka",
+      "caption": "Inuka keychain"
+    }
+  ]
+}
