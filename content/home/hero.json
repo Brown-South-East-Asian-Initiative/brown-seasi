@@ -8,8 +8,25 @@
   "background": "/images/landing-background.png",
   "backgroundAlt": "Southeast Asian landscape",
   "buttons": [
-    { "label": "Learn More", "href": "/#about", "style": "primary" },
-    { "label": "Speaker Series", "href": "/speaker-series", "style": "light" },
-    { "label": "Symposium 2026", "href": "/symposium", "style": "outline" }
+    {
+      "label": "Learn More",
+      "href": "/#about",
+      "style": "primary"
+    },
+    {
+      "label": "Speaker Series",
+      "href": "/speaker-series",
+      "style": "light"
+    },
+    {
+      "label": "Symposium 2026",
+      "href": "/symposium",
+      "style": "outline"
+    },
+    {
+      "label": "Testing Button",
+      "href": "/",
+      "style": "outline"
+    }
   ]
 }
