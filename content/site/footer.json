@@ -1,0 +1,50 @@
+{
+  "blurb": "The Southeast Asian Studies Initiative at Brown University. Advocating for the development of Southeast Asian Studies since 2017.",
+  "email": {
+    "label": "seasi@brown.edu",
+    "href": "mailto:seasi@brown.edu"
+  },
+  "linksHeading": "Navigation",
+  "links": [
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "About",
+      "href": "/#about"
+    },
+    {
+      "label": "Events",
+      "href": "/#events"
+    },
+    {
+      "label": "Symposium 2026",
+      "href": "/symposium"
+    },
+    {
+      "label": "Annual Report",
+      "href": "/SEASI%20Annual%20Report%202025-26.pdf"
+    }
+  ],
+  "socialsHeading": "Follow Us",
+  "socials": [
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/brown.seasi/",
+      "icon": "instagram"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/company/brown-seasi",
+      "icon": "linkedin"
+    },
+    {
+      "label": "Facebook",
+      "href": "https://www.facebook.com/@BrownSEASI",
+      "icon": "facebook"
+    }
+  ],
+  "copyright": "Brown SEASI · Providence, RI",
+  "bottomRight": "Brown University"
+}

@@ -18,64 +18,11 @@ export interface SpeakerTalk {
   gallery?: { src: string; alt: string; caption?: string }[]
 }
 
-export const speakerSeriesTerm = "Fall '26"
+// Talks live in content/talks/*.json. Read them with useTalks() (composables/useContent.ts)
+// so edit mode can change them live.
 
-export const speakerTalks: SpeakerTalk[] = [
-  {
-    slug: 'juno-parrenas',
-    date: '2026-09-30',
-    speaker: 'Juno Parreñas',
-    affiliation: 'Cornell University',
-    role: 'Associate Professor of Science and Technology Studies and Feminist, Gender and Sexuality Studies',
-    title: 'Tropical Polar Bears',
-    location: 'Sharpe House, Room 125',
-    time: '5:00 – 6:30 PM',
-    portrait: '/images/speaker-series/juno-parrenas.png',
-    flyer: '/images/speaker-series/flyer-juno-parrenas.png',
-    gallery: [
-      {
-        src: '/images/speaker-series/inuka-statue.jpg',
-        alt: 'Bronze statue of Inuka the polar bear among tropical plants',
-        caption: 'Memorial statue of Inuka',
-      },
-      {
-        src: '/images/speaker-series/inuka-cafe.jpg',
-        alt: 'Inuka Cafe storefront painted with icy mountains',
-        caption: 'Inuka Cafe',
-      },
-      {
-        src: '/images/speaker-series/inuka-keychain.jpg',
-        alt: 'Plush polar bear keychain embroidered with the name Inuka',
-        caption: 'Inuka keychain',
-      },
-    ],
-  },
-  {
-    slug: 'yu-mei-balasingamchow',
-    date: '2026-10-21',
-    speaker: 'Yu-Mei Balasingamchow',
-    affiliation: 'Author of Names Have Been Changed',
-    title: '"Names Have Been Changed" Book Talk & Signing',
-    location: 'Pembroke Hall, Room 305',
-    time: '5:30 – 7:00 PM',
-    portrait: '/images/speaker-series/yu-mei-balasingamchow.png',
-    flyer: [
-      '/images/speaker-series/flyer-yu-mei-balasingamchow-1.png',
-      '/images/speaker-series/flyer-yu-mei-balasingamchow-2.png',
-    ],
-    flyerDownload: '/Yu-Mei%20Balasingamchow%20Book%20Talk.pdf',
-  },
-  {
-    slug: 'nurfadzilah-yahaya',
-    date: '2026-11-10',
-    speaker: 'Nurfadzilah Yahaya',
-    affiliation: 'Yale University',
-    title: 'Who Owns the Shore? Making Land in Colonial Singapore',
-    location: 'Pavilion Room, Peter Green House',
-    time: '5:30 – 6:30 PM',
-    portrait: '/images/speaker-series/nurfadzilah-yahaya.jpg',
-  },
-]
+export const TALKS_FOLDER = 'content/talks'
+export const SPEAKER_SERIES_SETTINGS = 'content/settings/speaker-series.json'
 
 /** "2026-09-30" → Date at local noon (avoids timezone day-shift). */
 function toDate(iso: string) {

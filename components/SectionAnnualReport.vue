@@ -1,5 +1,23 @@
 <script setup lang="ts">
-const REPORT_URL = '/SEASI%20Annual%20Report%202025-26.pdf'
+const REPORT = 'content/home/annual-report.json'
+const report = useContentFile<{ pdf: string; viewLabel: string; coverImage: string; coverHighlights: string[]; hoverKicker: string; hoverText: string; hoverButton: string }>(REPORT)
+const reportUrl = computed(() => encodeURI(report.value?.pdf ?? ''))
+
+const { isEditing } = useEditor()
+const store = useContentStore()
+
+function addHighlight() {
+  store.update(REPORT, (d) => {
+    d.coverHighlights ??= []
+    d.coverHighlights.push('New highlight')
+  })
+}
+function removeHighlight(i: number) {
+  store.update(REPORT, d => d.coverHighlights.splice(i, 1))
+}
+function moveHighlight(_list: string, from: number, to: number) {
+  store.update(REPORT, d => moveItem(d.coverHighlights, from, to))
+}
 
 const root = ref<HTMLElement | null>(null)
 useScrollReveal(root)
@@ -16,26 +34,31 @@ useScrollReveal(root)
         <!-- Copy -->
         <div class="lg:col-span-5 space-y-8">
           <div data-reveal>
-            <span class="font-mono text-2xs uppercase tracking-widest text-crimson">
-              02 / Publications
-            </span>
+            <EditText :file="REPORT" field="label" class="font-mono text-2xs uppercase tracking-widest text-crimson" />
           </div>
 
           <div data-reveal>
             <h2 class="font-cormorant font-semibold leading-[0.95] text-ink">
-              <span class="block text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-tight">Annual Report</span>
-              <span class="block text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-tight text-crimson mt-1">2025–2026</span>
+              <EditText :file="REPORT" field="title" required class="block text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-tight" />
+              <EditText :file="REPORT" field="year" placeholder="Year" class="block text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-tight text-crimson mt-1" />
             </h2>
             <div class="mt-6 h-1 w-24 bg-gradient-to-r from-crimson to-crimson-vivid rounded-full" />
           </div>
 
-          <p data-reveal class="font-sans text-base md:text-lg text-ink/65 leading-relaxed max-w-lg">
-            Each year, SEASI releases a comprehensive annual report documenting our advocacy efforts, programming, academic milestones, and vision for the future of Southeast Asian Studies at Brown University.
-          </p>
+          <EditText
+            :file="REPORT"
+            field="description"
+            tag="p"
+            multiline
+            data-reveal
+            class="block font-sans text-base md:text-lg text-ink/65 leading-relaxed max-w-lg"
+          />
 
           <div data-reveal class="flex flex-wrap gap-4">
+            <!-- View: PDF opens in a new tab. Edit: change the label and the PDF address. -->
             <a
-              :href="REPORT_URL"
+              v-if="!isEditing"
+              :href="reportUrl"
               target="_blank"
               rel="noopener"
               class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 bg-crimson hover:bg-crimson-vivid text-ivory rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-crimson/35 hover:-translate-y-0.5 ring-1 ring-crimson-vivid/25"
@@ -45,18 +68,28 @@ useScrollReveal(root)
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              View Full Report
+              {{ report?.viewLabel }}
             </a>
-            <a
-              href="mailto:seasi@brown.edu"
+            <EditLink
+              v-else
+              :file="REPORT"
+              label-field="viewLabel"
+              href-field="pdf"
+              class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 bg-crimson text-ivory rounded-full ring-1 ring-crimson-vivid/25"
+            />
+            <EditLink
+              :file="REPORT"
+              label-field="contactLabel"
+              href-field="contactHref"
               class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 border border-ink/15 text-ink hover:border-crimson hover:text-crimson rounded-full transition-all duration-300 bg-white/40 backdrop-blur-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m2 7 10 7 10-7"/>
-              </svg>
-              Contact SEASI
-            </a>
+              <template #before>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="m2 7 10 7 10-7"/>
+                </svg>
+              </template>
+            </EditLink>
           </div>
         </div>
 
@@ -73,16 +106,17 @@ useScrollReveal(root)
               aria-hidden="true"
             />
 
-            <a
-              :href="REPORT_URL"
-              target="_blank"
-              rel="noopener"
+            <component
+              :is="isEditing ? 'div' : 'a'"
+              :href="isEditing ? undefined : reportUrl"
+              :target="isEditing ? undefined : '_blank'"
+              :rel="isEditing ? undefined : 'noopener'"
               class="group relative block overflow-hidden rounded-md bg-ink shadow-2xl ring-1 ring-crimson/30 outline-none transition-transform duration-300 ease-out will-change-transform hover:scale-[1.03] focus-visible:scale-[1.02] focus-visible:ring-2 focus-visible:ring-crimson-vivid focus-visible:ring-offset-2 focus-visible:ring-offset-ivory-dark origin-center"
             >
               <div class="relative isolate aspect-[3/4] sm:aspect-[4/5] overflow-hidden">
                 <div class="absolute inset-0 z-0">
                   <img
-                    src="/images/conference2.png"
+                    :src="store.assetSrc(report?.coverImage)"
                     alt=""
                     class="h-full w-full object-cover opacity-45 saturate-[0.85]"
                     aria-hidden="true"
@@ -102,39 +136,40 @@ useScrollReveal(root)
                       alt=""
                       class="h-9 w-auto object-contain brightness-0 invert opacity-90 mb-8"
                     >
-                    <p class="font-mono text-2xs uppercase tracking-[0.25em] text-crimson-vivid/90 mb-3">
-                      Brown SEASI · Publication
-                    </p>
-                    <h3 class="font-cormorant font-bold text-4xl sm:text-5xl leading-[0.95] tracking-tight">
-                      Annual<br>Report
-                    </h3>
-                    <p class="mt-4 font-cormorant italic text-2xl text-crimson-vivid">
-                      2025–2026
-                    </p>
+                    <EditText :file="REPORT" field="coverKicker" tag="p" class="block font-mono text-2xs uppercase tracking-[0.25em] text-crimson-vivid/90 mb-3" />
+                    <EditText :file="REPORT" field="coverTitle" tag="h3" multiline class="block font-cormorant font-bold text-4xl sm:text-5xl leading-[0.95] tracking-tight whitespace-pre-line" />
+                    <EditText :file="REPORT" field="year" tag="p" class="block mt-4 font-cormorant italic text-2xl text-crimson-vivid" />
                   </div>
 
-                  <ul class="space-y-2.5 border-t border-ivory/10 pt-6">
+                  <EditSortable tag="ul" class="space-y-2.5 border-t border-ivory/10 pt-6" @move="moveHighlight">
                     <li
-                      v-for="item in ['Advocacy & milestones', 'Events & programming', 'Faculty initiatives', 'Vision forward']"
-                      :key="item"
+                      v-for="(item, i) in report?.coverHighlights ?? []"
+                      :key="i"
+                      data-sort="highlight"
+                      :data-index="i"
                       class="flex items-center gap-3 font-sans text-xs text-ivory/55"
                     >
                       <span class="h-1 w-1 rounded-full bg-crimson-vivid shadow-[0_0_8px_rgba(239,68,68,0.45)]" />
-                      {{ item }}
+                      <EditText :file="REPORT" :field="`coverHighlights.${i}`" required />
+                      <button v-if="isEditing" type="button" class="seasi-edit-chip" style="position: static; width: 1.25rem; height: 1.25rem" title="Remove" @click="removeHighlight(i)">✕</button>
                     </li>
-                  </ul>
+                    <li v-if="isEditing">
+                      <button type="button" class="font-sans text-xs text-crimson-vivid hover:underline" @click="addHighlight">+ Highlight</button>
+                    </li>
+                  </EditSortable>
                 </div>
 
                 <!-- Hover: solid panel + PDF copy (CSS only) -->
                 <div
+                  v-if="!isEditing"
                   class="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-ink/90 px-8 text-center opacity-0 backdrop-blur-[1px] transition-opacity duration-300 ease-out group-hover:opacity-100"
                 >
-                  <span class="font-mono text-2xs uppercase tracking-[0.35em] text-crimson-vivid">Preview</span>
+                  <span class="font-mono text-2xs uppercase tracking-[0.35em] text-crimson-vivid">{{ report?.hoverKicker }}</span>
                   <p class="font-cormorant text-2xl sm:text-3xl text-ivory leading-snug max-w-sm">
-                    Open the full PDF
+                    {{ report?.hoverText }}
                   </p>
                   <span class="inline-flex items-center gap-2 rounded-full bg-crimson px-5 py-2 font-sans text-sm font-medium text-ivory ring-1 ring-crimson-vivid/40 shadow-lg shadow-crimson/30">
-                    View document
+                    {{ report?.hoverButton }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
                       <path d="M7 17L17 7M17 7H7M17 7v10"/>
                     </svg>
@@ -144,14 +179,21 @@ useScrollReveal(root)
 
               <!-- Bottom strip -->
               <div class="flex items-center justify-between gap-3 border-t border-ivory/10 bg-ink/95 px-5 py-3 backdrop-blur-sm">
-                <span class="font-mono text-2xs uppercase tracking-widest text-ivory/40">PDF · 2025–26</span>
+                <EditText :file="REPORT" field="stripLabel" class="font-mono text-2xs uppercase tracking-widest text-ivory/40" />
                 <span class="font-mono text-2xs text-crimson-vivid">↗</span>
               </div>
-            </a>
+            </component>
 
-            <p class="mt-4 text-center font-mono text-2xs uppercase tracking-widest text-muted lg:text-right">
-              Hover the cover for a quick preview · click to open
-            </p>
+            <EditText :file="REPORT" field="hint" tag="p" class="block mt-4 text-center font-mono text-2xs uppercase tracking-widest text-muted lg:text-right" />
+
+            <!-- Edit mode: the hover panel is hidden, so its text and the cover photo are edited here. -->
+            <div v-if="isEditing" class="mt-6 rounded-lg bg-ink text-ivory p-4 space-y-3 font-sans text-sm">
+              <button type="button" class="px-3 py-1.5 rounded-full bg-ivory/10 hover:bg-crimson text-xs" @click="replaceImageField(REPORT, 'coverImage')">Change cover photo</button>
+              <p class="text-xs text-ivory/50">Shown when visitors hover the cover:</p>
+              <EditText :file="REPORT" field="hoverKicker" tag="p" class="block font-mono text-2xs uppercase tracking-[0.35em] text-crimson-vivid" />
+              <EditText :file="REPORT" field="hoverText" tag="p" class="block font-cormorant text-2xl" />
+              <EditText :file="REPORT" field="hoverButton" tag="p" class="block" />
+            </div>
           </div>
         </div>
       </div>

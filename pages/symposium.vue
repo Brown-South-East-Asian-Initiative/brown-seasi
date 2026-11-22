@@ -1,7 +1,21 @@
 <script setup lang="ts">
-const title = 'Symposium 2026 — Brown SEASI'
-const description =
-  "SEASI's 6th Annual Symposium on Southeast Asian Studies, April 4, 2026 at the Watson Institute, Brown University."
+const D = SYMPOSIUM_DETAILS
+const S = SYMPOSIUM_SCHEDULE
+const { isEditing } = useEditor()
+const store = useContentStore()
+
+interface SymposiumDetails {
+  seoTitle: string
+  seoDescription: string
+  buttons?: { label: string; href: string }[]
+  photos?: { src: string; alt: string }[]
+}
+const details = useContentFile<SymposiumDetails>(D)
+const scheduleFile = useContentFile<{ items: ScheduleItem[] }>(S)
+const schedule = computed(() => scheduleFile.value?.items ?? [])
+
+const title = computed(() => details.value?.seoTitle ?? 'Symposium — Brown SEASI')
+const description = computed(() => details.value?.seoDescription ?? '')
 
 const ogImage = useSiteAssetUrl('/images/website-preview.png')
 
@@ -19,59 +33,37 @@ useSeoMeta({
   twitterImage: ogImage,
 })
 
-const schedule = [
-  {
-    time: '9:00 AM',
-    title: 'Registration & Morning Welcome',
-    type: 'Opening',
-    desc: 'Check-in and light refreshments. Welcome remarks from SEASI leadership.',
-  },
-  {
-    time: '10:00 AM',
-    title: 'Student Paper Presentations — Panel I',
-    type: 'Presentations',
-    desc: 'Original research by undergraduate and graduate students from Brown and partner institutions across the Northeast.',
-  },
-  {
-    time: '12:00 PM',
-    title: 'Catered Lunch',
-    type: 'Break',
-    desc: 'Networking lunch for attendees, presenters, and faculty.',
-  },
-  {
-    time: '1:30 PM',
-    title: 'Student Paper Presentations — Panel II',
-    type: 'Presentations',
-    desc: 'A second session of student-led research presentations covering diverse topics in Southeast Asian Studies.',
-  },
-  {
-    time: '3:30 PM',
-    title: 'Keynote Address',
-    type: 'Keynote',
-    desc: 'A leading scholar in Southeast Asian Studies delivers the keynote lecture, followed by a Q&A session.',
-    featured: true,
-  },
-  {
-    time: '5:30 PM',
-    title: 'Cultural Performance',
-    type: 'Culture',
-    desc: 'A performance celebrating Southeast Asian artistic and cultural heritage.',
-  },
-  {
-    time: '6:30 PM',
-    title: 'Catered Dinner & Reception',
-    type: 'Reception',
-    desc: 'Closing reception with dinner. An opportunity to connect with scholars, students, and advocates.',
-  },
+const typeColors = scheduleTypeColors
+const featuredOptions = [
+  { label: '★ Highlighted', value: true },
+  { label: '☆ Not highlighted', value: false },
 ]
 
-const typeColors: Record<string, string> = {
-  Opening:       'bg-sepia/10 text-sepia ring-1 ring-sepia/20',
-  Presentations: 'bg-ink/5 text-ink/60 ring-1 ring-border',
-  Break:         'bg-ivory-dark text-muted ring-1 ring-border',
-  Keynote:       'bg-crimson/12 text-crimson font-semibold ring-1 ring-crimson/30',
-  Culture:       'bg-sepia/10 text-sepia ring-1 ring-sepia/20',
-  Reception:     'bg-ink/5 text-ink/60 ring-1 ring-border',
+// ── Editing actions ───────────────────────────────────────────
+function addScheduleItem() {
+  store.update(S, (d) => {
+    d.items ??= []
+    d.items.push({ time: '12:00 PM', title: 'New item', type: 'Presentations', description: '' })
+  })
+}
+
+function removeScheduleItem(i: number) {
+  if (window.confirm(`Remove "${schedule.value[i]?.title}" from the schedule?`)) store.update(S, d => d.items.splice(i, 1))
+}
+
+function moveScheduleItem(_list: string, from: number, to: number) {
+  store.update(S, d => moveItem(d.items, from, to))
+}
+
+function addButton() {
+  store.update(D, (d) => {
+    d.buttons ??= []
+    d.buttons.push({ label: 'New button', href: '/' })
+  })
+}
+
+function removeButton(i: number) {
+  store.update(D, d => d.buttons.splice(i, 1))
 }
 
 const inviteRef = ref<HTMLElement | null>(null)
@@ -92,46 +84,50 @@ useScrollReveal(locationRef)
     <section ref="inviteRef" class="bg-white py-16 md:py-20 border-t border-crimson/10">
       <div class="max-w-8xl mx-auto px-6 md:px-10">
         <div class="max-w-3xl mx-auto text-center">
-          <p data-reveal class="font-mono text-2xs uppercase tracking-widest text-crimson mb-6">
-            About the Symposium
-          </p>
-          <p data-reveal class="font-cormorant italic text-2xl md:text-3xl text-ink leading-snug">
-            "Each year, SEASI convenes scholars, students, and advocates to advance the academic conversation around Southeast Asian studies — and to make the case for its permanent home at Brown."
-          </p>
+          <div data-reveal class="mb-6">
+            <EditText :file="D" field="aboutLabel" tag="p" required class="font-mono text-2xs uppercase tracking-widest text-crimson" />
+          </div>
+          <div data-reveal>
+            <EditText :file="D" field="aboutQuote" tag="p" multiline required class="font-cormorant italic text-2xl md:text-3xl text-ink leading-snug" />
+          </div>
           <div data-reveal class="mt-8 flex justify-center gap-4 flex-wrap">
-            <a
-              href="./symposium-invite"
-              class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 bg-crimson hover:bg-crimson-vivid text-ivory rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-crimson/25 ring-1 ring-crimson-vivid/20"
-            >
-              View Invitation
-            </a>
-            <a
-              href="mailto:seasi@brown.edu?subject=Symposium 2026 RSVP"
-              class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 border border-crimson/20 text-ink hover:border-crimson hover:text-crimson rounded-full transition-all duration-300"
-            >
-              RSVP / Contact
-            </a>
+            <span v-for="(btn, i) in details?.buttons ?? []" :key="i" class="relative inline-flex">
+              <EditLink
+                :file="D"
+                :label-field="`buttons.${i}.label`"
+                :href-field="`buttons.${i}.href`"
+                class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 rounded-full transition-all duration-300"
+                :class="i === 0
+                  ? 'bg-crimson hover:bg-crimson-vivid text-ivory hover:-translate-y-0.5 hover:shadow-lg hover:shadow-crimson/25 ring-1 ring-crimson-vivid/20'
+                  : 'border border-crimson/20 text-ink hover:border-crimson hover:text-crimson'"
+              />
+              <button
+                v-if="isEditing"
+                type="button"
+                class="absolute -top-2.5 -left-2.5 z-10 w-5 h-5 rounded-full bg-ink text-ivory text-[0.65rem] leading-5 text-center hover:bg-crimson"
+                title="Remove button"
+                @click="removeButton(i)"
+              >✕</button>
+            </span>
+            <button v-if="isEditing" type="button" class="seasi-edit-add min-h-0 px-5 py-3" @click="addButton">+ Button</button>
           </div>
         </div>
 
         <div class="mt-14 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 max-w-5xl mx-auto">
-          <div data-reveal class="group overflow-hidden rounded-lg ring-1 ring-crimson/15 shadow-lg shadow-crimson/5">
-            <img
-              src="/images/conference.png"
-              alt="Audience seated in the symposium venue at Brown"
+          <div
+            v-for="(photo, i) in details?.photos ?? []"
+            :key="i"
+            data-reveal
+            class="group overflow-hidden rounded-lg ring-1 ring-crimson/15 shadow-lg shadow-crimson/5"
+          >
+            <EditImage
+              :file="D"
+              :field="`photos.${i}.src`"
+              :alt-field="`photos.${i}.alt`"
               class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] md:h-64"
               loading="lazy"
               decoding="async"
-            >
-          </div>
-          <div data-reveal class="group overflow-hidden rounded-lg ring-1 ring-crimson/15 shadow-lg shadow-crimson/5">
-            <img
-              src="/images/conference2.png"
-              alt="SEASI community gathering and programming"
-              class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] md:h-64"
-              loading="lazy"
-              decoding="async"
-            >
+            />
           </div>
         </div>
       </div>
@@ -140,36 +136,49 @@ useScrollReveal(locationRef)
     <section ref="scheduleRef" class="bg-ivory py-20 md:py-32 relative">
       <div class="max-w-8xl mx-auto px-6 md:px-10">
         <div class="mb-14">
-          <p data-reveal class="font-mono text-2xs uppercase tracking-widest text-crimson mb-4">Schedule</p>
+          <div data-reveal class="mb-4">
+            <EditText :file="D" field="scheduleLabel" tag="p" required class="font-mono text-2xs uppercase tracking-widest text-crimson" />
+          </div>
           <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <h2 data-reveal class="font-cormorant font-semibold text-[clamp(2.5rem,6vw,5.5rem)] tracking-tighter leading-none text-ink">
-              April 4, 2026
-            </h2>
-            <p data-reveal class="font-sans text-sm text-muted max-w-xs leading-relaxed md:text-right border-l-2 md:border-l-0 md:border-r-2 border-crimson/20 pl-4 md:pl-0 md:pr-4">
-              Watson Institute · 111 Thayer Street<br>Providence, Rhode Island
-            </p>
+            <div data-reveal>
+              <EditText :file="D" field="scheduleHeading" tag="h2" required class="font-cormorant font-semibold text-[clamp(2.5rem,6vw,5.5rem)] tracking-tighter leading-none text-ink" />
+            </div>
+            <div data-reveal>
+              <EditText
+                :file="D"
+                field="scheduleVenue"
+                tag="p"
+                multiline
+                placeholder="Venue and address"
+                class="block font-sans text-sm text-muted max-w-xs leading-relaxed md:text-right border-l-2 md:border-l-0 md:border-r-2 border-crimson/20 pl-4 md:pl-0 md:pr-4 whitespace-pre-line"
+              />
+            </div>
           </div>
         </div>
 
         <div data-reveal class="mb-12 overflow-hidden rounded-lg ring-1 ring-crimson/15">
-          <img
-            src="/images/landing-background.png"
-            alt="Landscape representing Southeast Asia — symposium backdrop"
+          <EditImage
+            :file="D"
+            field="scheduleImage.src"
+            alt-field="scheduleImage.alt"
             class="h-48 w-full object-cover object-center md:h-56"
             loading="lazy"
             decoding="async"
-          >
+          />
         </div>
 
-        <div class="flex flex-col">
+        <EditSortable class="flex flex-col" @move="moveScheduleItem">
           <article
-            v-for="item in schedule"
-            :key="item.time"
+            v-for="(item, i) in schedule"
+            :key="`${i}-${item.time}`"
             data-reveal
+            :data-sort="isEditing ? 'schedule' : undefined"
+            :data-index="i"
             class="grid grid-cols-1 sm:grid-cols-[10rem_minmax(0,1fr)] gap-x-8 gap-y-3 py-8 border-b border-border last:border-0"
+            :class="isEditing ? 'cursor-grab' : ''"
           >
             <div class="font-mono text-sm text-muted sm:text-right sm:pt-1">
-              <time>{{ item.time }}</time>
+              <EditText :file="S" :field="`items.${i}.time`" tag="time" required />
             </div>
 
             <div class="relative sm:border-l sm:border-border sm:pl-8">
@@ -181,45 +190,69 @@ useScrollReveal(locationRef)
               />
 
               <div class="flex items-center gap-3 mb-2">
-                <span
-                  class="font-mono text-2xs uppercase tracking-widest px-2.5 py-1 rounded-full"
-                  :class="typeColors[item.type] ?? 'bg-ivory-dark text-muted'"
+                <EditSelect :file="S" :field="`items.${i}.type`" :options="scheduleTypes" label="Type" class="flex">
+                  <span
+                    class="font-mono text-2xs uppercase tracking-widest px-2.5 py-1 rounded-full"
+                    :class="typeColors[item.type] ?? 'bg-ivory-dark text-muted'"
+                  >
+                    {{ item.type }}
+                  </span>
+                </EditSelect>
+                <EditSelect
+                  v-if="isEditing"
+                  :file="S"
+                  :field="`items.${i}.featured`"
+                  :options="featuredOptions"
+                  label="Highlight"
                 >
-                  {{ item.type }}
-                </span>
+                  <span class="font-mono text-2xs uppercase tracking-widest text-muted">
+                    {{ item.featured ? '★ Highlighted' : '☆ Not highlighted' }}
+                  </span>
+                </EditSelect>
               </div>
-              <h3
-                class="font-cormorant font-semibold text-xl md:text-2xl leading-tight mb-2"
+              <EditText
+                :file="S"
+                :field="`items.${i}.title`"
+                tag="h3"
+                required
+                class="block font-cormorant font-semibold text-xl md:text-2xl leading-tight mb-2"
                 :class="item.featured ? 'text-crimson' : 'text-ink'"
-              >
-                {{ item.title }}
-              </h3>
-              <p class="font-sans text-sm text-muted leading-relaxed max-w-xl">
-                {{ item.desc }}
-              </p>
+              />
+              <EditText
+                :file="S"
+                :field="`items.${i}.description`"
+                tag="p"
+                multiline
+                placeholder="Description (optional)"
+                class="block font-sans text-sm text-muted leading-relaxed max-w-xl whitespace-pre-line"
+              />
             </div>
+            <button
+              v-if="isEditing"
+              type="button"
+              class="seasi-edit-chip right-0"
+              title="Remove from schedule"
+              @click.stop="removeScheduleItem(i)"
+            >✕</button>
           </article>
-        </div>
+        </EditSortable>
+        <button v-if="isEditing" type="button" class="seasi-edit-add w-full min-h-0 py-4 mt-6" @click="addScheduleItem">+ Add schedule item</button>
       </div>
     </section>
 
-    <SectionImageBreaker
-      src="/images/conference.png"
-      alt="Symposium attendees in session at Brown University"
-      height="h-[45vh] md:h-[55vh]"
-      overlay-text="A day of research, dialogue, and community at the Watson Institute."
-    />
+    <SectionImageBreaker :file="D" field="breaker" height="h-[45vh] md:h-[55vh]" :overlay="true" />
 
     <section ref="locationRef" class="bg-white py-20 md:py-28 border-t border-crimson/10">
       <div class="max-w-8xl mx-auto px-6 md:px-10">
         <div data-reveal class="mb-12 overflow-hidden rounded-lg ring-1 ring-crimson/15 md:mb-16">
-          <img
-            src="/images/conference2.png"
-            alt="SEASI event programming and community"
+          <EditImage
+            :file="D"
+            field="locationImage.src"
+            alt-field="locationImage.alt"
             class="aspect-[21/9] w-full object-cover object-center min-h-[10rem] md:min-h-[14rem]"
             loading="lazy"
             decoding="async"
-          >
+          />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
@@ -230,12 +263,8 @@ useScrollReveal(locationRef)
                 <circle cx="12" cy="10" r="3"/>
               </svg>
             </div>
-            <h3 class="font-cormorant font-semibold text-xl text-ink mb-2">Venue</h3>
-            <p class="font-sans text-sm text-muted leading-relaxed">
-              Watson Institute for International and Public Affairs<br>
-              111 Thayer Street<br>
-              Providence, Rhode Island 02912
-            </p>
+            <EditText :file="D" field="venue.heading" tag="h3" required class="block font-cormorant font-semibold text-xl text-ink mb-2" />
+            <EditText :file="D" field="venue.text" tag="p" multiline class="block font-sans text-sm text-muted leading-relaxed whitespace-pre-line" />
           </div>
 
           <div data-reveal>
@@ -247,12 +276,8 @@ useScrollReveal(locationRef)
                 <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
             </div>
-            <h3 class="font-cormorant font-semibold text-xl text-ink mb-2">Date & Time</h3>
-            <p class="font-sans text-sm text-muted leading-relaxed">
-              Saturday, April 4, 2026<br>
-              9:00 AM – 8:00 PM<br>
-              All are welcome to attend
-            </p>
+            <EditText :file="D" field="dateTime.heading" tag="h3" required class="block font-cormorant font-semibold text-xl text-ink mb-2" />
+            <EditText :file="D" field="dateTime.text" tag="p" multiline class="block font-sans text-sm text-muted leading-relaxed whitespace-pre-line" />
           </div>
 
           <div data-reveal>
@@ -262,11 +287,11 @@ useScrollReveal(locationRef)
                 <path d="m2 7 10 7 10-7"/>
               </svg>
             </div>
-            <h3 class="font-cormorant font-semibold text-xl text-ink mb-2">Contact</h3>
+            <EditText :file="D" field="contact.heading" tag="h3" required class="block font-cormorant font-semibold text-xl text-ink mb-2" />
             <p class="font-sans text-sm text-muted leading-relaxed">
-              Questions or RSVP:<br>
-              <a href="mailto:seasi@brown.edu" class="text-crimson hover:underline">seasi@brown.edu</a><br>
-              <span class="text-muted/60">Advisor: Marisa Fortney</span>
+              <EditText :file="D" field="contact.intro" placeholder="Intro line" /><br>
+              <EditLink :file="D" label-field="contact.email.label" href-field="contact.email.href" class="text-crimson hover:underline" :class="isEditing ? 'pr-4' : ''" /><br>
+              <EditText :file="D" field="contact.note" placeholder="Note (optional)" class="text-muted/60" />
             </p>
           </div>
         </div>

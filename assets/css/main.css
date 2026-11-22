@@ -66,3 +66,75 @@ body {
   pointer-events: none;
   z-index: 1;
 }
+
+/* ── Website editor (only applies in edit mode) ─────────────────────────── */
+/* Element-level specificity: beats Tailwind's base button reset, loses to utility classes on the same element. */
+.seasi-edit {
+  outline: 1.5px dashed transparent;
+  outline-offset: 3px;
+  cursor: text;
+  transition: outline-color 0.15s;
+}
+.seasi-edit:hover { outline-color: rgb(196 30 58 / 0.55); }
+.seasi-edit--active {
+  outline: 2px solid #C41E3A;
+  background: rgb(255 255 255 / 0.85);
+  color: #1C1917;
+  cursor: text;
+}
+.seasi-edit--empty { min-width: 6rem; display: inline-block; }
+.seasi-edit--empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+  font-style: italic;
+}
+.seasi-edit--image { cursor: pointer; }
+.seasi-edit--image:hover { outline-style: solid; outline-offset: -3px; filter: brightness(0.92); }
+.seasi-sort-ghost { opacity: 0.35; }
+[data-sort] { position: relative; }
+:is(button, a, div, span, label):where(.seasi-edit-chip) {
+  position: absolute;
+  top: 0.4rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: rgb(28 25 23 / 0.8);
+  color: #F9F6F0;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+:is(button, a, div, span, label):where(.seasi-edit-chip:hover) { background: #C41E3A; }
+:is(button, a, div, span, label):where(.seasi-edit-add) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  border: 1.5px dashed rgb(196 30 58 / 0.4);
+  border-radius: 0.5rem;
+  color: #C41E3A;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+:is(button, a, div, span, label):where(.seasi-edit-add:hover) { background: rgb(196 30 58 / 0.06); }
+.seasi-edit--select { cursor: pointer; }
+:is(button, a, div, span, label):where(.seasi-link-chip) {
+  position: absolute;
+  top: -0.6rem;
+  right: -0.6rem;
+  z-index: 5;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background: #1C1917;
+  color: #F9F6F0;
+  font-size: 0.7rem;
+  line-height: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+}
+:is(button, a, div, span, label):where(.seasi-link-chip:hover) { background: #C41E3A; }

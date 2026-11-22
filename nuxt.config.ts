@@ -14,7 +14,10 @@ function publicSiteUrl() {
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@vueuse/nuxt',
+  ],
 
   css: ['~/assets/css/main.css'],
 
@@ -25,6 +28,10 @@ export default defineNuxtConfig({
        * If unset, Netlify’s `URL` is used automatically during the build.
        */
       siteUrl: publicSiteUrl(),
+      /** owner/name of the repo the editor saves to. Override with NUXT_PUBLIC_GITHUB_REPO. */
+      githubRepo: 'Brown-South-East-Asian-Initiative/brown-seasi',
+      /** Branch the editor reads from and opens PRs against. Override with NUXT_PUBLIC_GITHUB_BRANCH. */
+      githubBranch: 'main',
     },
   },
 
@@ -44,6 +51,11 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+
+  routeRules: {
+    // Editor login runs only in the browser (it reads the token from the URL fragment).
+    '/edit': { ssr: false },
   },
 
   tailwindcss: {

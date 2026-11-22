@@ -1,0 +1,18 @@
+{
+  "label": "01 / About SEASI",
+  "headingSmall": "meet",
+  "headingLarge": "SEASI.",
+  "image": "/images/conference2.png",
+  "imageAlt": "SEASI members and events",
+  "subheading": "About Us",
+  "paragraphs": [
+    "The Southeast Asian Studies Initiative began in 2017 after students in *Modern Southeast Asian History* recognized how little sustained coursework on the region existed at Brown.",
+    "Since then, SEASI has organized efforts, secured new faculty and language instruction at the department level, held numerous events to expand the understanding of Southeast Asia, and developed formal academic proposals to push for long-term institutional commitments.",
+    "The initiative continues to advocate for a durable infrastructure — such as a center or concentration — that would firmly establish Southeast Asian studies within the university."
+  ],
+  "stats": [
+    { "value": "6", "suffix": "th", "label": "Annual\nSymposium" },
+    { "value": "2017", "label": "Year\nFounded" },
+    { "value": "∞", "label": "Ongoing\nAdvocacy" }
+  ]
+}
