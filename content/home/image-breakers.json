@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "src": "/images/conference.png",
+      "alt": "Surfer at sunset",
+      "label": "SEASI",
+      "quote": "Advocating for a durable infrastructure that firmly establishes Southeast Asian studies within Brown University.",
+      "caption": "Brown SEASI"
+    },
+    {
+      "src": "/images/conference2.png",
+      "alt": "Southeast Asian cultural image"
+    }
+  ]
+}

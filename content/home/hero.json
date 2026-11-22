@@ -1,0 +1,15 @@
+{
+  "badge": "Est. 2017 · Brown University",
+  "eyebrow": "Welcome to the",
+  "titleLine1": "Brown Southeast",
+  "titleHighlight": "Asian Studies",
+  "titleLine3": "Initiative.",
+  "intro": "An academic advocacy group at Brown University calling for the development of Southeast Asian Studies through increased faculty, courses, and programming.",
+  "background": "/images/landing-background.png",
+  "backgroundAlt": "Southeast Asian landscape",
+  "buttons": [
+    { "label": "Learn More", "href": "/#about", "style": "primary" },
+    { "label": "Speaker Series", "href": "/speaker-series", "style": "light" },
+    { "label": "Symposium 2026", "href": "/symposium", "style": "outline" }
+  ]
+}

@@ -1,20 +1,25 @@
 {
   "name": "brown-seasi",
-  "type": "module",
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "6.14.0",
+    "@vueuse/nuxt": "^14.2.1",
+    "gsap": "^3.15.0",
+    "nuxt": "^4.4.2",
+    "sortablejs": "1.15.7",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4"
+  },
   "private": true,
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "dev:edit": "npx --yes netlify-cli@27.12.1 dev"
   },
-  "dependencies": {
-    "@nuxtjs/tailwindcss": "6.14.0",
-    "@vueuse/nuxt": "^14.2.1",
-    "gsap": "^3.15.0",
-    "nuxt": "^4.4.2",
-    "vue": "^3.5.32",
-    "vue-router": "^5.0.4"
+  "type": "module",
+  "devDependencies": {
+    "@types/sortablejs": "1.15.9"
   }
 }

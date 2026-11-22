@@ -1,0 +1,25 @@
+{
+  "label": "02 / Publications",
+  "title": "Annual Report",
+  "year": "2025–2026",
+  "description": "Each year, SEASI releases a comprehensive annual report documenting our advocacy efforts, programming, academic milestones, and vision for the future of Southeast Asian Studies at Brown University.",
+  "pdf": "/SEASI Annual Report 2025-26.pdf",
+  "viewLabel": "View Full Report",
+  "contactLabel": "Contact SEASI",
+  "contactHref": "mailto:seasi@brown.edu",
+  "aboutLinkLabel": "Read our Annual Report 2025–2026",
+  "coverImage": "/images/conference2.png",
+  "coverKicker": "Brown SEASI · Publication",
+  "coverTitle": "Annual\nReport",
+  "coverHighlights": [
+    "Advocacy & milestones",
+    "Events & programming",
+    "Faculty initiatives",
+    "Vision forward"
+  ],
+  "hoverKicker": "Preview",
+  "hoverText": "Open the full PDF",
+  "hoverButton": "View document",
+  "stripLabel": "PDF · 2025–26",
+  "hint": "Hover the cover for a quick preview · click to open"
+}

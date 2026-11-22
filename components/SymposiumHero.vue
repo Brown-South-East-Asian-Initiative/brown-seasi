@@ -11,28 +11,26 @@ const props = withDefaults(
 
 const root = ref<HTMLElement | null>(null)
 
-const features = [
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    label: 'Keynote Address',
-    desc: 'A leading scholar in Southeast Asian Studies',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
-    label: 'Student Presentations',
-    desc: 'Researchers from Brown and across the Northeast',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
-    label: 'Cultural Performance',
-    desc: 'Celebrating Southeast Asian arts and heritage',
-  },
-  {
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`,
-    label: 'Reception',
-    desc: 'Catered lunch and dinner for all attendees',
-  },
-]
+const F = SYMPOSIUM_DETAILS
+const { isEditing } = useEditor()
+const store = useContentStore()
+const details = useContentFile<{ features?: { icon: string; label: string; desc: string }[] }>(F)
+const features = computed(() => details.value?.features ?? [])
+
+function addFeature() {
+  store.update(F, (d) => {
+    d.features ??= []
+    d.features.push({ icon: 'star', label: 'New highlight', desc: 'Short description' })
+  })
+}
+
+function removeFeature(i: number) {
+  if (window.confirm('Remove this card?')) store.update(F, d => d.features.splice(i, 1))
+}
+
+function moveFeature(_list: string, from: number, to: number) {
+  store.update(F, d => moveItem(d.features, from, to))
+}
 
 onMounted(() => {
   const section = root.value
@@ -72,19 +70,29 @@ onMounted(() => {
 
     <div class="relative z-10 max-w-8xl mx-auto px-6 md:px-10 pt-32 pb-20 md:pt-44 md:pb-28">
       <div class="sym-label mb-6">
-        <span class="font-mono text-2xs uppercase tracking-widest text-ivory/70 border border-crimson-vivid/40 bg-ink/15 rounded-full px-3 py-1 inline-block ring-1 ring-crimson-vivid/20">
-          6th Annual · Brown University
-        </span>
+        <EditText
+          :file="F"
+          field="badge"
+          required
+          class="font-mono text-2xs uppercase tracking-widest text-ivory/70 border border-crimson-vivid/40 bg-ink/15 rounded-full px-3 py-1 inline-block ring-1 ring-crimson-vivid/20"
+        />
       </div>
 
       <h1 class="sym-title font-cormorant font-bold text-ivory leading-none mb-2">
-        <span class="block text-[clamp(4rem,11vw,11rem)] tracking-tighter leading-[0.88] drop-shadow-[0_8px_40px_rgba(0,0,0,0.25)]">
-          Symposium
-        </span>
+        <EditText
+          :file="F"
+          field="title"
+          required
+          class="block text-[clamp(4rem,11vw,11rem)] tracking-tighter leading-[0.88] drop-shadow-[0_8px_40px_rgba(0,0,0,0.25)]"
+        />
       </h1>
-      <p class="sym-subtitle font-cormorant text-[clamp(1.8rem,4.5vw,4.5rem)] tracking-tight text-ivory/70 font-light italic mb-8 max-w-3xl">
-        Southeast Asian Studies
-      </p>
+      <EditText
+        :file="F"
+        field="subtitle"
+        tag="p"
+        placeholder="Subtitle"
+        class="sym-subtitle block font-cormorant text-[clamp(1.8rem,4.5vw,4.5rem)] tracking-tight text-ivory/70 font-light italic mb-8 max-w-3xl"
+      />
 
       <div class="sym-meta flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 mb-16">
         <div class="flex items-center gap-2">
@@ -94,9 +102,7 @@ onMounted(() => {
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          <span class="font-mono text-sm text-ivory/80 uppercase tracking-wide">
-            Saturday, April 4, 2026
-          </span>
+          <EditText :file="F" field="dateLine" required class="font-mono text-sm text-ivory/80 uppercase tracking-wide" />
         </div>
         <span class="hidden sm:block text-crimson-vivid/50">|</span>
         <div class="flex items-center gap-2">
@@ -104,23 +110,34 @@ onMounted(() => {
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
             <circle cx="12" cy="10" r="3"/>
           </svg>
-          <span class="font-mono text-sm text-ivory/80 uppercase tracking-wide">
-            Watson Institute · 111 Thayer St, Providence RI
-          </span>
+          <EditText :file="F" field="venueLine" required class="font-mono text-sm text-ivory/80 uppercase tracking-wide" />
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <EditSortable class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @move="moveFeature">
         <div
-          v-for="feat in features"
-          :key="feat.label"
+          v-for="(feat, i) in features"
+          :key="i"
+          :data-sort="isEditing ? 'feature' : undefined"
+          :data-index="i"
           class="sym-card bg-white/5 border border-crimson-vivid/20 rounded-sm p-6 hover:bg-white/10 hover:border-crimson-vivid/40 transition-all duration-300 group"
+          :class="isEditing ? 'cursor-grab' : ''"
         >
-          <div class="text-ivory/60 group-hover:text-ivory/90 transition-colors mb-4" v-html="feat.icon" />
-          <h3 class="font-cormorant font-semibold text-lg text-ivory mb-1">{{ feat.label }}</h3>
-          <p class="font-sans text-xs text-ivory/45 leading-relaxed">{{ feat.desc }}</p>
+          <EditSelect :file="F" :field="`features.${i}.icon`" :options="featureIconOptions" label="Icon" tag="div" class="mb-4">
+            <div class="text-ivory/60 group-hover:text-ivory/90 transition-colors" v-html="featureIcons[feat.icon]?.svg ?? featureIcons.star!.svg" />
+          </EditSelect>
+          <EditText :file="F" :field="`features.${i}.label`" tag="h3" required class="block font-cormorant font-semibold text-lg text-ivory mb-1" />
+          <EditText :file="F" :field="`features.${i}.desc`" tag="p" placeholder="Short description" class="block font-sans text-xs text-ivory/45 leading-relaxed" />
+          <button
+            v-if="isEditing"
+            type="button"
+            class="seasi-edit-chip right-1.5"
+            title="Remove card"
+            @click.stop="removeFeature(i)"
+          >✕</button>
         </div>
-      </div>
+        <button v-if="isEditing" type="button" class="seasi-edit-add !text-ivory/80 !border-ivory/30 hover:!bg-white/5" @click="addFeature">+ Add card</button>
+      </EditSortable>
     </div>
   </section>
 </template>

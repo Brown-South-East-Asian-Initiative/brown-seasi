@@ -58,11 +58,9 @@ useHead({
     <SectionAbout />
 
     <SectionImageBreaker
-      src="/images/conference.png"
-      alt="Surfer at sunset"
+      file="content/home/image-breakers.json"
+      field="items.0"
       :overlay="true"
-      overlay-text="Advocating for a durable infrastructure that firmly establishes Southeast Asian studies within Brown University."
-      caption="Brown SEASI"
     />
 
     <SectionAnnualReport />
@@ -70,8 +68,8 @@ useHead({
     <SectionEvents />
 
     <SectionImageBreaker
-      src="/images/conference2.png"
-      alt="Southeast Asian cultural image"
+      file="content/home/image-breakers.json"
+      field="items.1"
       height="h-[40vh] md:h-[55vh]"
       :overlay="false"
     />

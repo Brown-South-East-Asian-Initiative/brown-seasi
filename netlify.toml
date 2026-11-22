@@ -1,0 +1,9 @@
+# Local dev with the editor login: `bun run dev:edit`, then open http://localhost:8888
+# (runs `nuxt dev` behind Netlify's dev server so /.netlify/functions/* work and .env is loaded).
+# Build settings are left to the Netlify UI on purpose.
+[dev]
+  command = "bun run dev"
+  targetPort = 3000
+  port = 8888
+  framework = "#custom"
+  autoLaunch = false

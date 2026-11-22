@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
+const { isEditing } = useEditor()
 const route = useRoute()
 
 const siteUrl = computed(() => (config.public.siteUrl as string | undefined)?.replace(/\/$/, '') ?? '')
@@ -22,4 +23,7 @@ useHead({
 
 <template>
   <NuxtPage />
+  <ClientOnly>
+    <LazyEditToolbar v-if="isEditing" />
+  </ClientOnly>
 </template>

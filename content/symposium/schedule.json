@@ -1,0 +1,47 @@
+{
+  "items": [
+    {
+      "time": "9:00 AM",
+      "title": "Registration & Morning Welcome",
+      "type": "Opening",
+      "description": "Check-in and light refreshments. Welcome remarks from SEASI leadership."
+    },
+    {
+      "time": "10:00 AM",
+      "title": "Student Paper Presentations — Panel I",
+      "type": "Presentations",
+      "description": "Original research by undergraduate and graduate students from Brown and partner institutions across the Northeast."
+    },
+    {
+      "time": "12:00 PM",
+      "title": "Catered Lunch",
+      "type": "Break",
+      "description": "Networking lunch for attendees, presenters, and faculty."
+    },
+    {
+      "time": "1:30 PM",
+      "title": "Student Paper Presentations — Panel II",
+      "type": "Presentations",
+      "description": "A second session of student-led research presentations covering diverse topics in Southeast Asian Studies."
+    },
+    {
+      "time": "3:30 PM",
+      "title": "Keynote Address",
+      "type": "Keynote",
+      "description": "A leading scholar in Southeast Asian Studies delivers the keynote lecture, followed by a Q&A session.",
+      "featured": true
+    },
+    {
+      "time": "5:30 PM",
+      "title": "Cultural Performance",
+      "type": "Culture",
+      "description": "A performance celebrating Southeast Asian artistic and cultural heritage."
+    },
+    {
+      "time": "6:30 PM",
+      "title": "Catered Dinner & Reception",
+      "type": "Reception",
+      "description": "Closing reception with dinner. An opportunity to connect with scholars, students, and advocates."
+    }
+  ]
+}

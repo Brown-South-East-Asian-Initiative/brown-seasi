@@ -55,14 +55,33 @@ bun install
 
 | Command | Description |
 |---------|-------------|
-| `bun run dev` | Dev server (default: http://localhost:3000) |
+| `bun run dev` | Dev server (default: http://localhost:3000), view only |
+| `bun run dev:edit` | Dev server with the editor login: http://localhost:8888 (runs `netlify dev`, loads `.env`) |
 | `bun run build` | Production build |
 | `bun run preview` | Preview production build locally |
 | `bun run generate` | Static generation (`nuxt generate`) |
 
 ## Environment
 
-No API keys are required for the current static content. Update `nuxt.config.ts` `app.head` for site-wide title, description, and Open Graph tags.
+Copy `.env.example` to `.env` and fill it in. Set the same variables in Netlify → Environment variables.
+
+| Variable | Used for |
+|---|---|
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub App "SEASI Website Editor" (editor login). Never commit the secret. |
+| `NUXT_PUBLIC_SITE_URL` | Primary domain (`https://seasi.org`): share-preview URLs and the login redirect allowlist |
+| `NUXT_PUBLIC_GITHUB_BRANCH` (optional) | Branch the editor reads from and opens PRs against. Default `main`. |
+| `NUXT_PUBLIC_GITHUB_REPO` (optional) | `owner/name` of the repo. Default `Brown-South-East-Asian-Initiative/brown-seasi`. |
+
+## Website editor
+
+Members edit the site in place at `/edit` (guide: [EDITING.md](EDITING.md)). How it works:
+
+- **Content lives in `content/**/*.json`**, never in components. Components read it with `useContentFile(path)`, `useCollection(folder)` or `useTalks()` (`composables/useContent.ts`).
+- **Editable pieces** wrap content in `components/edit/`: `<EditText>`, `<EditImage>`, `<EditLink>` (with optional `upload="application/pdf"`), `<EditDate>`, `<EditSelect>`, `<EditSortable>`. Outside edit mode they render plain HTML, so visitors never see editor UI.
+- **Login:** `netlify/functions/auth.mts` + `callback.mts` (GitHub App OAuth; helpers in `netlify/lib/oauth.mts`). The token stays in the editor's tab (`sessionStorage`).
+- **Saving** (`composables/useEditor.ts`, `utils/github.ts`): the browser commits changed JSON files and uploads (`public/uploads/`) to a `site-edits/<user>-<time>` branch and opens a PR. Netlify builds a deploy preview; merging publishes.
+- **Making a new section editable:** move its text into a JSON file under `content/`, read it with `useContentFile`, and swap hardcoded text/images/links for the `Edit*` components. See `pages/speaker-series/index.vue` for lists with add/remove/reorder.
+- **Local dev:** after adding content files by hand (e.g. `git pull`), restart `bun run dev:edit`.
 
 ## License / content
 
