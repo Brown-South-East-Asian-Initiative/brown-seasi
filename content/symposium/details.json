@@ -32,10 +32,6 @@
   "aboutQuote": "\"Each year, SEASI convenes scholars, students, and advocates to advance the academic conversation around Southeast Asian studies — and to make the case for its permanent home at Brown.\"",
   "buttons": [
     {
-      "label": "View Invitation",
-      "href": "./symposium-invite"
-    },
-    {
       "label": "RSVP / Contact",
       "href": "mailto:seasi@brown.edu?subject=Symposium 2026 RSVP"
     }

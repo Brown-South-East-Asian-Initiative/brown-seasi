@@ -220,6 +220,7 @@ function moveStat(_list: string, from: number, to: number) {
               :file="REPORT"
               label-field="aboutLinkLabel"
               href-field="pdf"
+              upload="application/pdf"
               class="inline-flex items-center gap-2 font-sans text-sm font-medium text-crimson border-b-2 border-crimson/30 pb-0.5"
             />
           </div>

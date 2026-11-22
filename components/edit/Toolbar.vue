@@ -39,6 +39,31 @@ function exit() {
   signOut()
 }
 
+// ── Pages menu: jump to a member-built page, or make a new one ──
+const pagesOpen = ref(false)
+const customPages = useCollection<CustomPage>(CUSTOM_PAGES_FOLDER)
+
+async function newPage() {
+  const title = window.prompt('Name of the new page (e.g. "Oral History Project"):')?.trim()
+  if (!title) return
+  let slug = slugify(title)
+  while (store.read(customPagePath(slug))) slug = `${slug}-2`
+  store.create(customPagePath(slug), {
+    slug,
+    title,
+    subtitle: '',
+    blocks: [BLOCK_TYPES[0]!.create()],
+  })
+  if (window.confirm(`Add "${title}" to the site menu?`)) {
+    store.update(SITE_NAV, (data) => {
+      data.links ??= []
+      data.links.push({ label: title, href: `/p/${slug}` })
+    })
+  }
+  pagesOpen.value = false
+  await navigateTo(`/p/${slug}`)
+}
+
 function onKeydown(e: KeyboardEvent) {
   const target = e.target as HTMLElement | null
   if (target?.isContentEditable || target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return
@@ -125,6 +150,25 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
       >Draft #{{ draft.number }} ↗</a>
 
       <span class="w-px h-5 bg-ivory/15" />
+
+      <span class="relative">
+        <button class="px-2 py-1 rounded hover:bg-ivory/10" :aria-expanded="pagesOpen" @click="pagesOpen = !pagesOpen">Pages</button>
+        <div
+          v-if="pagesOpen"
+          class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-72 bg-ink text-ivory rounded-xl shadow-2xl ring-1 ring-ivory/10 p-2 text-sm"
+        >
+          <p class="px-2 py-1 font-mono text-2xs uppercase tracking-widest text-ivory/50">Your pages</p>
+          <NuxtLink
+            v-for="p in customPages"
+            :key="p.path"
+            :to="`/p/${p.data.slug}`"
+            class="block px-2 py-1.5 rounded hover:bg-ivory/10 truncate"
+            @click="pagesOpen = false"
+          >{{ p.data.title }}</NuxtLink>
+          <p v-if="!customPages.length" class="px-2 py-1.5 text-ivory/50">None yet.</p>
+          <button class="w-full text-left px-2 py-1.5 mt-1 rounded text-crimson-vivid hover:bg-ivory/10 border-t border-ivory/10" @click="newPage">+ New page</button>
+        </div>
+      </span>
 
       <button
         class="px-2 py-1 rounded hover:bg-ivory/10 disabled:opacity-30"

@@ -136,21 +136,19 @@ Mostly done already in the stash `decap-cms attempt` (`git stash list`). Restore
 - [ ] Required-field checks before save (e.g. a talk needs a speaker and a date).
 
 Known gaps after Phase 4:
-- No PDF upload yet (editors can change a PDF's address, not upload one). Add an `EditFile` editor.
-- The `./symposium-invite` link on the symposium page is broken (now editable); it also makes `nuxt generate` fail.
 - Section numbers like "01 / About SEASI" are plain text; sections can't be reordered.
 - Local dev: after adding content files by hand (e.g. `git pull`), restart `bun run dev:edit`.
 
 ### Phase 5: New pages from blocks (optional, 2–3 days)
-- [ ] "+ New page": a title and slug, then stack blocks: text, image, gallery, button, collapsible (FAQ), embed (YouTube / Internet Archive), quote.
-- [ ] One template `pages/p/[slug].vue`. Block components live in `components/blocks/`, each wrapped in the editable pieces.
-- [ ] Prerender page routes from `content/pages/custom/*.json`.
+- [x] "+ New page": a title and slug, then stack blocks: text, image, gallery, button, collapsible (FAQ), embed (YouTube / Internet Archive), quote.
+- [x] One template `pages/p/[slug].vue`. Block components live in `components/block/`, each wrapped in the editable pieces.
+- [x] Prerender page routes from `content/custom-pages/*.json`.
 
 ### Phase 6: Guardrails, docs, handoff (1–2 days)
 - [ ] Branch protection on `main` (require a PR and 1 approval from an admin).
 - [x] Image limits: resize to max 2000px and compress in the browser; no audio or video uploads (link out instead).
 - [ ] **Conflicts:** content is one file per item, so two drafts rarely touch the same file. If they do, the toolbar warns ("Another draft also edits this talk") and GitHub shows the conflict on the PR.
-- [ ] `EDITING.md` with screenshots for members; developer notes in the README (how to make a new component editable).
+- [x] `EDITING.md` for members; developer notes in the README (how to make a new component editable).
 - [ ] Hand off accounts and run a walkthrough with Audrey and the board.
 
 **Rough total:** about 2–3 weeks of part-time work for Phases 0–4 (the core). Phase 5 is optional.

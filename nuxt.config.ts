@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 /** Canonical origin for OG URLs (no trailing slash). Inlined at build time. */
@@ -9,6 +11,17 @@ function publicSiteUrl() {
     process.env.DEPLOY_PRIME_URL ||
     ''
   return raw.replace(/\/$/, '')
+}
+
+/** Member-built pages (content/custom-pages/*.json) are prerendered at /p/<slug>. */
+function customPageRoutes() {
+  try {
+    return readdirSync('content/custom-pages')
+      .filter(f => f.endsWith('.json'))
+      .map(f => `/p/${f.replace(/\.json$/, '')}`)
+  } catch {
+    return []
+  }
 }
 
 export default defineNuxtConfig({
@@ -51,6 +64,10 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+
+  nitro: {
+    prerender: { routes: customPageRoutes() },
   },
 
   routeRules: {

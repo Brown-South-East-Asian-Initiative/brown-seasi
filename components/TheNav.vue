@@ -148,7 +148,7 @@ function goTo(href: string) {
     >
       <div
         v-if="menuOpen"
-        class="md:hidden relative border-t border-crimson/10 bg-ivory/98 backdrop-blur-md"
+        class="md:hidden relative border-t border-crimson/10 bg-ivory/[0.98] backdrop-blur-md"
       >
         <EditSortable tag="ul" class="px-6 py-4 flex flex-col gap-1" @move="moveLink">
           <li

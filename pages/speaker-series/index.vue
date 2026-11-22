@@ -103,6 +103,15 @@ async function pickImage() {
   }
 }
 
+async function uploadFlyerPdf(path: string) {
+  try {
+    const url = await pickAndStageFile('application/pdf')
+    if (url) store.set(path, 'flyerDownload', url)
+  } catch (e) {
+    window.alert(e instanceof Error ? e.message : 'Could not use that file.')
+  }
+}
+
 /** Drag-to-reorder inside a talk's image grid (flyers and photos are separate lists). */
 function reorderMedia(path: string, list: string, from: number, to: number) {
   store.update(path, (data) => {
@@ -463,6 +472,19 @@ onMounted(() => {
                     >
                       Download flyer
                     </a>
+                  </div>
+
+                  <div v-if="isEditing" class="mt-3 flex flex-wrap items-center gap-3 font-sans text-xs text-muted">
+                    <span>
+                      Flyer PDF:
+                      <span class="text-ink">{{ talk.flyerDownload ? talk.flyerDownload.split('/').pop() : 'none (the button opens the first flyer image)' }}</span>
+                    </span>
+                    <button type="button" class="text-crimson hover:underline" @click="uploadFlyerPdf(talk.path)">
+                      {{ talk.flyerDownload ? 'Replace PDF' : 'Upload PDF' }}
+                    </button>
+                    <button v-if="talk.flyerDownload" type="button" class="text-muted hover:text-crimson hover:underline" @click="store.set(talk.path, 'flyerDownload', '')">
+                      Remove PDF
+                    </button>
                   </div>
                 </div>
               </div>

@@ -75,6 +75,7 @@ useScrollReveal(root)
               :file="REPORT"
               label-field="viewLabel"
               href-field="pdf"
+              upload="application/pdf"
               class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 bg-crimson text-ivory rounded-full ring-1 ring-crimson-vivid/25"
             />
             <EditLink

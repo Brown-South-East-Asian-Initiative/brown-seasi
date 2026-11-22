@@ -8,8 +8,11 @@ const { session, isEditing, repo, restore, signIn, signOut, loginUrl } = useEdit
 const status = ref<'idle' | 'checking' | 'error'>('idle')
 const error = ref('')
 const returnTo = ref('/')
+/** Plain `nuxt dev` (port 3000) doesn't run the login functions; `bun run dev:edit` (8888) does. */
+const wrongDevPort = ref(false)
 
 onMounted(async () => {
+  wrongDevPort.value = location.hostname === 'localhost' && location.port === '3000'
   const hash = new URLSearchParams(window.location.hash.slice(1))
   // Remove the token from the address bar and history right away.
   if (window.location.hash) history.replaceState(null, '', window.location.pathname)
@@ -74,6 +77,14 @@ onMounted(async () => {
         <p class="font-sans text-sm text-muted leading-relaxed mb-6">
           Log in with your GitHub account to change text and images on the SEASI site.
           Your changes are saved as a draft for an admin to review before they go live.
+        </p>
+
+        <p
+          v-if="wrongDevPort"
+          class="font-sans text-sm text-ink bg-sepia/15 ring-1 ring-sepia/40 rounded-lg px-4 py-3 mb-6"
+        >
+          Login doesn't work on port 3000. Run <code class="font-mono">bun run dev:edit</code> and open
+          <a class="underline" href="http://localhost:8888/edit">localhost:8888/edit</a>.
         </p>
 
         <p

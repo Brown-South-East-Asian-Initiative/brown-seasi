@@ -96,6 +96,7 @@ useScrollReveal(locationRef)
                 :file="D"
                 :label-field="`buttons.${i}.label`"
                 :href-field="`buttons.${i}.href`"
+                upload="application/pdf"
                 class="inline-flex items-center gap-2 font-sans text-sm font-medium px-6 py-3 rounded-full transition-all duration-300"
                 :class="i === 0
                   ? 'bg-crimson hover:bg-crimson-vivid text-ivory hover:-translate-y-0.5 hover:shadow-lg hover:shadow-crimson/25 ring-1 ring-crimson-vivid/20'

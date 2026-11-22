@@ -9,6 +9,8 @@ const props = defineProps<{
   file: string
   labelField: string
   hrefField: string
+  /** Allow uploading a file as the link target, e.g. "application/pdf". */
+  upload?: string
 }>()
 
 const { isEditing } = useEditor()
@@ -23,6 +25,15 @@ const isExternal = computed(() => /^https?:/i.test(href.value))
 /** External sites and files (PDFs) open in a new tab. */
 const opensNewTab = computed(() => isExternal.value || (isPlain.value && !/^(mailto:|tel:)/i.test(href.value)))
 const safeHref = computed(() => (/^(https?:|mailto:|tel:)/i.test(href.value) ? href.value : encodeURI(decodeURI(href.value))))
+
+async function uploadFile() {
+  try {
+    const url = await pickAndStageFile(props.upload)
+    if (url) store.set(props.file, props.hrefField, url)
+  } catch (e) {
+    window.alert(e instanceof Error ? e.message : 'Could not use that file.')
+  }
+}
 
 function editHref() {
   const next = window.prompt('Where should this link go?\n\n• A page on this site: /symposium\n• A section: /#events\n• Another website: https://…\n• Email: mailto:seasi@brown.edu', href.value)
@@ -47,6 +58,13 @@ function editHref() {
       :title="`Change link (now: ${href || 'none'})`"
       @click.stop.prevent="editHref"
     >🔗</button>
+    <button
+      v-if="upload"
+      type="button"
+      class="seasi-link-chip opacity-0 group-hover/elink:opacity-100 focus:opacity-100 transition-opacity !right-auto !left-[-0.6rem]"
+      title="Upload a new file"
+      @click.stop.prevent="uploadFile"
+    >⬆</button>
   </span>
   <a
     v-else-if="isPlain"

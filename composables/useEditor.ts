@@ -93,15 +93,31 @@ export function useEditor() {
     loadNote.value = ''
     try {
       const gh = api()
-      const { files } = await gh.contentTree(baseBranch)
+      const { files: baseFiles } = await gh.contentTree(baseBranch)
+
+      // With an open draft, show the draft's version so new saves build on it
+      // (conflict checks still compare against the base branch).
+      let files = baseFiles
+      if (draft.value) {
+        const open = await gh.pullRequestIsOpen(draft.value.number).catch(() => false)
+        if (open) files = (await gh.contentTree(draft.value.branch)).files
+        else clearDraft()
+      }
+
       if (!Object.keys(files).length) {
         loadNote.value = `No content found on the "${baseBranch}" branch yet. Showing this build's content.`
         restoreUnsaved()
         return
       }
       await Promise.all(Object.entries(files).map(async ([path, sha]) => {
-        store.loadRemote(path, await gh.readBlobJson(sha), sha)
+        store.loadRemote(path, await gh.readBlobJson(sha), baseFiles[path] ?? '')
       }))
+      // Files the draft deleted shouldn't reappear from the bundled copy.
+      if (files !== baseFiles) {
+        for (const path of Object.keys(store.state.value.files)) {
+          if (!(path in files)) delete store.state.value.files[path]
+        }
+      }
       restoreUnsaved()
     } catch (e) {
       restoreUnsaved()
@@ -131,6 +147,13 @@ export function useEditor() {
       }
       store.state.value.files = saved.files
       store.state.value.assets = saved.assets
+    } catch {}
+  }
+
+  function clearDraft() {
+    draft.value = null
+    try {
+      sessionStorage.removeItem(DRAFT_KEY)
     } catch {}
   }
 
@@ -189,7 +212,7 @@ export function useEditor() {
         const commitSha = await gh.commitFiles({ fromBranch: current.branch, toBranch: current.branch, createBranch: false, message: commitMessage, files, binaries })
         current = { ...current, commitSha }
       } else {
-        const branch = `edit/${s.login.toLowerCase()}-${timestamp()}`
+        const branch = `site-edits/${s.login.toLowerCase()}-${timestamp()}`
         const commitSha = await gh.commitFiles({ fromBranch: baseBranch, toBranch: branch, createBranch: true, message: commitMessage, files, binaries })
         const pr = await gh.openPullRequest({
           base: baseBranch,
